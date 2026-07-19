@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <title>Login</title>
+    <style>
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FFDEE9, #B5FFFC);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #2C3E50;
+            overflow: hidden;
+        }
+
+        .form-container {
+            width: 600px;
+            max-width: 90%;
+            background: rgba(44, 62, 80, 0.85); /* Dark background */
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            padding: 50px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px); /* Optional blur effect */
+        }
+
+        .form-container:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-container h2 {
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            color: #ECF0F1; /* Light text for contrast */
+            font-weight: bold;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #34495E;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease-in-out;
+            background: #34495E;
+            color: #fff;
+        }
+
+        .form-container input:focus {
+            border-color: #ffffff;
+            box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+            outline: none;
+        }
+
+        .form-container input::placeholder {
+            color: #BDC3C7;
+        }
+
+        .form-container button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #ffffff; /* Red button */
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .form-container button:hover {
+            background-color: #69302a;
+            transform: translateY(-5px);
+        }
+
+        .form-container button:active {
+            background-color: #1c638d;
+            transform: translateY(0);
+        }
+
+        .form-container a {
+            display: block;
+            margin-top: 20px;
+            font-size: 1rem;
+            text-decoration: none;
+            color: #ECF0F1;
+        }
+
+        .form-container a:hover {
+            color: #e74c3c;
+        }
+
+        .form-container .icon {
+            font-size: 4rem;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+
+        /* Background image */
+        body {
+            background: url('https://images.pexels.com/photos/3182766/pexels-photo-3182766.jpeg') no-repeat center center/cover;
+background-size: cover;
+
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <i class="fas fa-user-circle icon"></i>
+        <h2>Login to Your Account</h2>
+        <form method="POST" action="{{ url_for('main') }}">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+            <a href="{{ url_for('signup') }}" class="signup-link">Don't have an account? Sign up</a>
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul>
+              {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        
+    </div>
+</body>
+
+</html>

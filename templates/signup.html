@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a2c2f2, #d9e6f2); /* Elegant light blue gradient */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #34495E;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .signup-wrapper {
+            width: 700px; /* Increased width for more substantial appearance */
+            max-width: 100%;
+            background: #2c3e50; /* Darker background for a professional feel */
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            padding: 60px 50px; /* Increased padding for balance */
+            position: relative;
+            animation: slideIn 1s ease-out;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .signup-wrapper:hover {
+            transform: translateY(-5px);
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h2 {
+            font-size: 2.8rem; /* Larger header */
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 30px; /* Increased spacing between inputs */
+            position: relative;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid #34495E; /* Darker border for contrast */
+            border-radius: 12px;
+            font-size: 1.1rem; /* Slightly larger font */
+            transition: all 0.3s ease-in-out;
+            background: #34495E;
+            color: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+
+        .input-group input::placeholder {
+            color: #BDC3C7;
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 14px;
+            left: 18px;
+            font-size: 1.1rem;
+            color: #BDC3C7;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .input-group input:focus + label,
+        .input-group select:focus + label,
+        .input-group input:not(:placeholder-shown) + label {
+            top: -10px;
+            font-size: 1rem;
+            color: #3498db;
+        }
+
+        .signup-btn {
+            width: 100%;
+            padding: 18px;
+            background-color: #1abc9c; /* Updated, modern green-blue color */
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .signup-btn:hover {
+            background-color: #16a085; /* Slightly darker for hover effect */
+            transform: translateY(-5px);
+        }
+
+        .signup-btn:active {
+            background-color: #1c7f6b; /* Even darker for active state */
+            transform: translateY(0);
+        }
+
+        .signup-link {
+            text-align: center;
+            display: block;
+            margin-top: 25px;
+            text-decoration: none;
+            color: #3498db;
+            font-size: 1.1rem;
+        }
+
+        .signup-link:hover {
+            color: #2980b9;
+        }
+
+        /* Background image for the entire page */
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg') no-repeat center center/cover;
+            opacity: 0.2;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="signup-wrapper">
+            <h2>Create Your Freelancer Account</h2>
+            <form method="POST" action="{{ url_for('signup') }}">
+                <div class="input-group">
+                    <input type="text" id="full_name" name="full_name" placeholder=" " required>
+                    <label for="full_name">Full Name</label>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="email" name="email" placeholder=" " required>
+                    <label for="email">Email Address</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" name="password" placeholder=" " required>
+                    <label for="password">Password</label>
+                </div>
+                <div class="input-group">
+                    <select id="role" name="role" required>
+                        <option value="" disabled selected>Select Role</option>
+                        <option value="3D Artist">3D Artist</option>
+                        <option value="Web Developer">Web Developer</option>
+                        <option value="Content Writer">Content Writer</option>
+                    </select>
+                    <label for="role">Role</label>
+                </div>
+                <button type="submit" class="signup-btn">Sign Up</button>
+                <a href="{{ url_for('main') }}" class="signup-link">Already have an account? Login</a>
+
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

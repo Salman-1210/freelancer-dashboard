@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+    .overdue {
+        background-color: #ffcccc; /* Light red background */
+    }
+
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #1d1f21, #333);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Dashboard Wrapper */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            max-width: 1400px;
+            width: 100%;
+            background: #22252a;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .dashboard-container:hover {
+            transform: scale(1.015);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #1d1f21;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar:hover {
+            background-color: #333;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1ABC9C;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a:focus {
+            background: #1ABC9C;
+            outline: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            background: #2c2f33;
+            transition: background-color 0.3s ease;
+        }
+
+        .main-content:hover {
+            background-color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-group:hover {
+            background-color: #444;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #1e2124;
+            color: #fff;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-group input:hover, .form-group select:hover {
+            background-color: #444;
+        }
+
+        .form-group button {
+            background: #1ABC9C;
+            border: none;
+            padding: 10px 20px;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-group button:hover {
+            background: #16A085;
+        }
+
+        /* Table Hover Effects */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #555;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #1ABC9C;
+            color: #fff;
+        }
+
+        td a {
+            background: #E74C3C;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        td a:hover {
+            background: #C0392B;
+        }
+
+        /* Hover Effect for Chart Container */
+        .chart-container {
+            margin-top: 30px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .chart-container:hover {
+            transform: scale(1.05);
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+            background: #222;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        /* Notification Popup */
+        .notification-popup {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            background-color: #1ABC9C;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+        .logout-button {
+        color: white; /* Text color */
+        background-color: #e74c3c; /* Red background */
+        padding: 10px 15px; /* Padding for better button look */
+        border-radius: 5px; /* Rounded corners */
+        text-decoration: none; /* Remove underline */
+        display: inline-block; /* Better alignment */
+    }
+
+    .logout-button:hover {
+        background-color: #c0392b; /* Darker red for hover effect */
+    }
+
+    .logout-button i {
+        margin-right: 5px; /* Add space between icon and text */
+    }
+        /* Edit Button Styling */
+.btn-edit {
+    background: #3498DB;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-edit:hover {
+    background: #2980B9;
+}
+
+/* Save Button Styling */
+.btn-save {
+    background: #1ABC9C;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-save:hover {
+    background: #16A085;
+}
+
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Dashboard</h2>
+            <ul>
+                <li><a href="#" id="menu-projects"><i class="bx bx-task"></i> Projects</a></li>
+                <li><a href="#" id="menu-insights"><i class="bx bx-line-chart"></i> Insights</a></li>
+                <li>
+                    <a href="{{ url_for('logout') }}" id="menu-logout" class="logout-button">
+                        <i class="bx bx-log-out"></i> Logout
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+            <!-- Notification Popup -->
+            <div id="notification" class="notification-popup">
+                <span id="notification-message"></span>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                async function showUpcomingDeadlineNotification() {
+    try {
+        const response = await fetch('/api/projects');
+        const data = await response.json();
+
+        if (data.projects && data.projects.length > 0) {
+            // Filter out completed and failed projects, focus on pending projects
+            const pendingProjects = data.projects.filter(project => project.status !== "completed" && project.status !== "Failed");
+
+            if (pendingProjects.length > 0) {
+                // Get the current date and time to compare with deadlines
+                const currentDate = new Date().getTime();
+
+                // Filter out projects with past deadlines
+                const futurePendingProjects = pendingProjects.filter(project => new Date(project.deadline).getTime() > currentDate);
+
+                if (futurePendingProjects.length > 0) {
+                    // Find the closest deadline from the future pending projects
+                    const closestDeadline = Math.min(
+                        ...futurePendingProjects.map(project => new Date(project.deadline).getTime())
+                    );
+
+                    // Get all projects with the same closest deadline
+                    const closestProjects = futurePendingProjects.filter(project =>
+                        new Date(project.deadline).getTime() === closestDeadline
+                    );
+
+                    // Format the notification message
+                    const projectNames = closestProjects.map(project => project.name).join(", ");
+                    const formattedDeadline = new Date(closestDeadline).toLocaleDateString();
+
+                    const notification = document.getElementById("notification");
+                    const notificationMessage = document.getElementById("notification-message");
+                    notificationMessage.textContent = `Upcoming Deadline: ${projectNames} - ${formattedDeadline}`;
+                    notification.style.display = "block";
+
+                    // Fade in the notification
+                    setTimeout(() => {
+                        notification.style.opacity = 1;
+                    }, 10);
+
+                    // Fade out the notification after 4 seconds
+                    setTimeout(() => {
+                        notification.style.opacity = 0;
+                        setTimeout(() => {
+                            notification.style.display = "none";
+                        }, 500); // Wait for fade-out transition to complete
+                    }, 4000);
+                } else {
+                    console.log("No upcoming pending projects found.");
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching projects for notification:", error);
+    }
+}
+
+// Trigger the function when the page loads
+document.addEventListener("DOMContentLoaded", () => {
+    showUpcomingDeadlineNotification();
+});
+
+    </script>        
+</script>
+
+    
+        <!-- Main Content -->
+        <div class="main-content" id="main-content">
+            <!-- Project Section -->
+            <div id="projects-section">
+                <h2>Manage Projects</h2>
+                <form action="/dashboard" method="POST">
+                    <div class="form-group">
+                        <label for="project-name">Project Name</label>
+                        <input type="text" id="project-name" name="project_name" placeholder="Enter project name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="project-deadline">Deadline</label>
+                        <input type="date" id="project-deadline" name="deadline" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="project-revenue">Revenue</label>
+                        <input type="number" id="project-revenue" name="revenue" placeholder="Enter revenue" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="project-platform">Platform</label>
+                        <select id="project-platform" name="platform" required>
+                            <option value="fiverr">Fiverr</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="upwork">Upwork</option>
+                            <option value="freelancer">Freelancer</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="indeed">Indeed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="project-status">Status</label>
+                        <select id="project-status" name="status" required>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Save Project</button>
+                           </div>
+                           
+                </form> 
+                
+                <!-- Project Table -->
+<table id="project-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Deadline</th>
+            <th>Revenue</th>
+            <th>Platform</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for project in projects %}
+        <tr data-project-id="{{ project[0] }}">
+            <td class="project-name">{{ project[1] }}</td>
+            <td class="project-deadline">{{ project[2] }}</td>
+            <td class="project-revenue">{{ project[3] }}</td>
+            <td class="project-platform">{{ project[4] }}</td>
+            <td class="project-status">{{ project[5] }}</td>
+            <td>
+                <a href="{{ url_for('delete_project', project_id=project[0]) }}" class="btn-delete">Delete</a>
+                <button class="btn-edit">Edit</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+            </div>
+
+<!-- Insights Section -->
+<div id="insights-section" style="display: none;">
+    <h2>Insights</h2>
+    <div class="chart-container">
+        <canvas id="revenue-chart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="monthly-projects-chart"></canvas>
+    </div>
+    <div class="chart-container">
+        <canvas id="role-distribution-chart"></canvas>  <!-- New chart for role distribution -->
+    </div>
+    <div class="chart-container">
+        <canvas id="platform-distribution-chart"></canvas>  <!-- New chart for platform distribution -->
+    </div>
+    <div class="chart-container">
+        <canvas id="status-distribution-chart"></canvas>  <!-- New chart for status distribution -->
+    </div>
+    
+</div>
+
+
+
+
+    <!-- Notification Popup -->
+    <div id="notification" class="notification-popup">
+        <span id="notification-message"></span>
+    </div>
+
+    <script>
+        // Toggle between sections
+        const menuProjects = document.getElementById("menu-projects");
+        const menuInsights = document.getElementById("menu-insights");
+        const projectsSection = document.getElementById("projects-section");
+        const insightsSection = document.getElementById("insights-section");
+
+        menuProjects.addEventListener("click", () => {
+            projectsSection.style.display = "block";
+            insightsSection.style.display = "none";
+        });
+
+        menuInsights.addEventListener("click", () => {
+            projectsSection.style.display = "none";
+            insightsSection.style.display = "block";
+            loadInsights();
+        });
+
+// Load Charts for Insights
+function loadInsights() {
+    fetch("/api/projects")
+        .then((response) => response.json())
+        .then((data) => {
+            if (!data.projects || data.projects.length === 0) {
+                console.error("No projects available for insights.");
+                return;
+            }
+
+            const projectNames = data.projects.map((p) => p.name);
+            const revenues = data.projects.map((p) => p.revenue);
+            const deadlines = data.projects.map((p) => new Date(p.deadline).getTime());
+
+            // Create Revenue Chart
+            const ctxRevenue = document.getElementById("revenue-chart").getContext("2d");
+            new Chart(ctxRevenue, {
+                type: "bar",
+                data: {
+                    labels: projectNames,
+                    datasets: [{
+                        label: "Project Revenue",
+                        data: revenues,
+                        backgroundColor: "#1ABC9C",
+                    }],
+                },
+            });
+
+            // Create Monthly Projects Chart (Months on X-axis, Number of Projects on Y-axis)
+            const formattedMonths = deadlines.map(deadline => {
+                const date = new Date(deadline);
+                const month = date.toLocaleString('default', { month: 'short' }); // 'Jan', 'Feb', etc.
+                return month;
+            });
+
+            const projectsPerMonth = {
+                "Jan": 0, "Feb": 0, "Mar": 0, "Apr": 0, "May": 0,
+                "Jun": 0, "Jul": 0, "Aug": 0, "Sep": 0, "Oct": 0,
+                "Nov": 0, "Dec": 0
+            };
+
+            formattedMonths.forEach((month) => {
+                projectsPerMonth[month] += 1;
+            });
+
+            const monthLabels = Object.keys(projectsPerMonth);  // Month labels (Jan, Feb, Mar...)
+            const projectCounts = Object.values(projectsPerMonth);  // Number of projects for each month
+
+            const ctxMonthlyProjects = document.getElementById("monthly-projects-chart").getContext("2d");
+            new Chart(ctxMonthlyProjects, {
+                type: "line",
+                data: {
+                    labels: monthLabels,  // Use month names (Jan, Feb, Mar...)
+                    datasets: [{
+                        label: "Projects Over Time",
+                        data: projectCounts,  // Use the project counts for the y-axis
+                        borderColor: "#E74C3C",
+                        fill: false,
+                    }],
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,   // Start Y-axis at 0
+                            ticks: {
+                                stepSize: 1,     // Ensure integers on Y-axis
+                                precision: 0     // No decimals
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Create Role Distribution Chart
+            const roleCounts = data.role_counts;
+            const ctxRoleDistribution = document.getElementById("role-distribution-chart").getContext("2d");
+            new Chart(ctxRoleDistribution, {
+                type: "pie",
+                data: {
+                    labels: Object.keys(roleCounts),
+                    datasets: [{
+                        label: "Role Distribution",
+                        data: Object.values(roleCounts),
+                        backgroundColor: [
+                        "rgba(41, 128, 185, 0.6)",  // Muted Navy Blue (professional)
+                        "rgba(241, 85, 40, 0.6)",   // Muted Coral (subtle and refined)
+                        "rgba(39, 174, 96, 0.6)"    // Muted Olive Green (modern and professional)
+            ],
+                    }],
+                },
+            });
+
+           // Create Platform Distribution Chart (Radar / Spider Web Chart)
+// Create Platform Distribution Chart (Radar / Spider Web Chart)
+const platformCounts = {};
+data.projects.forEach((project) => {
+    const platform = project.platform;
+    platformCounts[platform] = (platformCounts[platform] || 0) + 1;
+});
+
+const platformLabels = Object.keys(platformCounts);
+const platformData = Object.values(platformCounts);
+
+const ctxPlatformDistribution = document.getElementById("platform-distribution-chart").getContext("2d");
+new Chart(ctxPlatformDistribution, {
+    type: "radar",  // Change to radar type for a spider web chart
+    data: {
+        labels: platformLabels,
+        datasets: [{
+            label: "Platform Distribution",
+            data: platformData,
+            backgroundColor: [
+                "rgba(41, 128, 185, 0.6)",  // Muted Navy Blue for 'fiverr'
+                "rgba(46, 204, 113, 0.6)",  // Muted Green for 'upwork'
+                "rgba(52, 152, 219, 0.6)",  // Muted Blue for 'facebook'
+                "rgba(149, 165, 166, 0.6)", // Muted Gray for 'linkedin'
+                "rgba(241, 85, 40, 0.6)"    // Muted Coral for 'freelancer'
+            ],
+            borderColor: [
+                "rgba(41, 128, 185, 1)",  // Dark Blue border for 'fiverr'
+                "rgba(46, 204, 113, 1)",  // Dark Green border for 'upwork'
+                "rgba(52, 152, 219, 1)",  // Dark Blue border for 'facebook'
+                "rgba(149, 165, 166, 1)", // Dark Gray border for 'linkedin'
+                "rgba(241, 85, 40, 1)"    // Dark Coral border for 'freelancer'
+            ],
+            borderWidth: 2,
+            pointBackgroundColor: [
+                "rgba(41, 128, 185, 1)",  // Dark Blue for points on 'fiverr'
+                "rgba(46, 204, 113, 1)",  // Dark Green for points on 'upwork'
+                "rgba(52, 152, 219, 1)",  // Dark Blue for points on 'facebook'
+                "rgba(149, 165, 166, 1)", // Dark Gray for points on 'linkedin'
+                "rgba(241, 85, 40, 1)"    // Dark Coral for points on 'freelancer'
+            ],
+            pointBorderColor: "#fff",  // White border for points
+            pointBorderWidth: 2,  // Border width for points
+            pointRadius: 4,  // Size of the points
+        }],
+    },
+    options: {
+        responsive: true,
+        scale: {
+            ticks: {
+                beginAtZero: true,  // Make sure the scale starts at 0
+                stepSize: 1,  // Customize step size
+                max: Math.max(...platformData) + 1  // Set maximum value slightly above the max count
+            },
+            angleLines: {
+                display: true,  // Show the lines between points
+                lineWidth: 2  // Line width for axis lines
+            },
+            gridLines: {
+                color: "rgba(255, 255, 255, 0.2)",  // Light color for grid lines (white-ish)
+                lineWidth: 1  // Thin grid lines
+            },
+            pointLabels: {
+                font: {
+                    size: 14,
+                    family: "Arial",
+                    weight: "bold"
+                },
+                color: "#fff", // Color of the point labels (platform names)
+            }
+        },
+        elements: {
+            line: {
+                tension: 0.4,  // Smooth the lines to avoid sharp edges
+                borderWidth: 2,  // Line thickness
+            }
+        },
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: {
+                        size: 14
+                    },
+                    color: '#fff' // White text for better contrast on dark background
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return `${tooltipItem.label}: ${tooltipItem.raw}`; // Customize label format
+                    }
+                }
+            }
+        }
+    }
+});
+
+          // Create Status Distribution Chart (Completed vs Pending vs Failed)
+const statusCounts = {
+    "Completed": 0,
+    "Pending": 0,
+    "Failed": 0  // Add Failed status
+};
+
+data.projects.forEach((project) => {
+    if (project.status === "completed") {
+        statusCounts["Completed"] += 1;
+    } else if (project.status === "pending") {
+        statusCounts["Pending"] += 1;
+    } else if (project.status === "Failed") {  // Add check for Failed status
+        statusCounts["Failed"] += 1;
+    }
+});
+console.log(data.projects);  // This will show the full data array including statuses
+console.log(statusCounts);  // Check if Failed projects are being counted
+
+const statusLabels = Object.keys(statusCounts);
+const statusData = Object.values(statusCounts);
+
+const ctxStatusDistribution = document.getElementById("status-distribution-chart").getContext("2d");
+new Chart(ctxStatusDistribution, {
+    type: "polarArea",  // Polar area chart type
+    data: {
+        labels: statusLabels,
+        datasets: [{
+            label: "Project Status Distribution",
+            data: statusData,
+            backgroundColor: [
+                "rgba(46, 204, 113, 0.6)",  // Professional Green for Completed
+                "rgba(243, 156, 18, 0.6)",  // Professional Orange for Pending
+                "rgba(231, 76, 60, 0.6)",   // Professional Red for Failed
+            ],
+            borderColor: [
+                "#FFFFFF",  // White border for all segments
+                "#FFFFFF",  // White border for all segments
+                "#FFFFFF"   // White border for all segments
+            ],
+            borderWidth: 1
+        }],
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: {
+                        size: 14
+                    },
+                    color: '#fff'
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return `${tooltipItem.label}: ${tooltipItem.raw}`;
+                    }
+                }
+            }
+        }
+    }
+});
+  })
+        .catch((error) => console.error("Error loading insights:", error));
+}
+
+    </script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Handle Edit Button Click
+    document.querySelectorAll(".btn-edit").forEach((button) => {
+        button.addEventListener("click", (e) => {
+            const row = e.target.closest("tr");
+            const projectId = row.dataset.projectId;
+
+            // Replace static cells with input fields
+            row.innerHTML = `
+                <td><input type="text" class="edit-name" value="${row.querySelector(".project-name").textContent}" /></td>
+                <td><input type="date" class="edit-deadline" value="${row.querySelector(".project-deadline").textContent}" /></td>
+                <td><input type="number" class="edit-revenue" value="${row.querySelector(".project-revenue").textContent}" /></td>
+                <td>
+                    <select class="edit-platform">
+                        <option value="fiverr" ${row.querySelector(".project-platform").textContent === "fiverr" ? "selected" : ""}>Fiverr</option>
+                        <option value="facebook" ${row.querySelector(".project-platform").textContent === "facebook" ? "selected" : ""}>Facebook</option>
+                        <option value="upwork" ${row.querySelector(".project-platform").textContent === "upwork" ? "selected" : ""}>Upwork</option>
+                        <option value="freelancer" ${row.querySelector(".project-platform").textContent === "freelancer" ? "selected" : ""}>Freelancer</option>
+                        <option value="linkedin" ${row.querySelector(".project-platform").textContent === "linkedin" ? "selected" : ""}>LinkedIn</option>
+                        <option value="indeed" ${row.querySelector(".project-platform").textContent === "indeed" ? "selected" : ""}>Indeed</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="edit-status">
+                        <option value="pending" ${row.querySelector(".project-status").textContent === "pending" ? "selected" : ""}>Pending</option>
+                        <option value="completed" ${row.querySelector(".project-status").textContent === "completed" ? "selected" : ""}>Completed</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn-save">Save</button>
+                </td>
+            `;
+
+            // Add Save Button Logic
+            row.querySelector(".btn-save").addEventListener("click", () => saveEdit(row, projectId));
+        });
+    });
+});
+
+function saveEdit(row, projectId) {
+    // Gather Edited Data
+    const editedData = {
+        project_name: row.querySelector(".edit-name").value,
+        deadline: row.querySelector(".edit-deadline").value,
+        revenue: row.querySelector(".edit-revenue").value,
+        platform: row.querySelector(".edit-platform").value,
+        status: row.querySelector(".edit-status").value,
+        project_id: projectId,  // Add project_id to the request data
+    };
+
+    // Log the edited data to the console for debugging
+    console.log("Edited data:", editedData);
+
+    if (!editedData.project_name || !editedData.deadline || !editedData.revenue) {
+        alert("Please fill in all fields.");
+        return;
+    }
+
+    // Send Updated Data to Server
+    fetch(`/update_project/${projectId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editedData),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                // Update Row with Edited Data
+                row.innerHTML = `
+                    <td class="project-name">${editedData.project_name}</td>
+                    <td class="project-deadline">${editedData.deadline}</td>
+                    <td class="project-revenue">${editedData.revenue}</td>
+                    <td class="project-platform">${editedData.platform}</td>
+                    <td class="project-status">${editedData.status}</td>
+                    <td>
+                        <a href="/delete_project/${projectId}" class="btn-delete">Delete</a>
+                        <button class="btn-edit">Edit</button>
+                    </td>
+                `;
+            } else {
+                alert("Error updating project. Please try again.");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+}
+
+</script>
+ <!-- Add your JavaScript here -->
+ <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll("#project-table tbody tr");
+        const currentDate = new Date();
+
+        rows.forEach(row => {
+            const deadlineCell = row.querySelector(".project-deadline");
+            const statusCell = row.querySelector(".project-status");
+            const deadline = new Date(deadlineCell.textContent.trim());
+
+            if (deadline < currentDate && statusCell.textContent.trim().toLowerCase() !== "completed") {
+                row.classList.add("overdue");
+                statusCell.textContent = "Failed";
+            }
+        });
+    });
+</script>
+</body>
+</html>
